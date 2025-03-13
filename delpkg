@@ -27,6 +27,8 @@ CMD="$1"
 if [ -z "$CMD" ]; then
     echo "Error: Expected a package name to delete"
     usage
+elif [[ "$1" == "-h" || "$1" == "--help" ]]; then
+    usage
     exit 1
 fi
 
