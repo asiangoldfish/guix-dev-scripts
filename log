@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# Function to display usage
+usage() {
+    echo "Usage: log [OPTIONS]"
+    echo "Finds the most recent failed build log (.drv.gz) in the Guix store."
+    echo ""
+    echo "Options:"
+    echo "  -h, --help    Show this help message and exit."
+    exit 0
+}
+
+# Check for help option
+if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+    usage
+fi
+
+# Define the Guix store directory
+GUIX_STORE="/var/log/guix/drvs/nl/"
+
+# Find the latest .drv.gz file sorted by modification time
+latest_log=$(find "$GUIX_STORE" -name "*.drv.gz" -type f -printf "%T@ %p\n" | sort -nr | awk '{print $2; exit}')
+
+# Check if a log file was found
+if [[ -n "$latest_log" ]]; then
+    ! command -v "zcat" >/dev/null && {
+        echo "Command zcat not found"
+        exit 1
+    }
+    zcat "$latest_log"
+else
+    echo "No .drv.gz files found in $GUIX_STORE."
+fi
