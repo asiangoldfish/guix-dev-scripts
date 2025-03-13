@@ -35,4 +35,4 @@ fi
     exit 1
 }
 
-guix gc -D "$CMD"
+guix gc -D /gnu/store/*"$CMD"*
