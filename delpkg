@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+#######
+## Delete a package by the package name from the guix store.
+## This will find and delete all of the packages, including lock and build
+## directories.
+##
+## Deletion pattern: /gnu/store/xxxxxxxxxx-package-name-xxxxxx/
+## where xxxxx are searched with regex (wildcard).
+#######
+
+function usage() {
+    echo "Usage: delpkg package-name
+
+Delete a package from the guix store.
+
+Commands:
+    -h, --help          this page
+
+Example:
+    delpkg foo      # Delete the package 'foo'
+"
+}
+
+CMD="$1"
+
+if [ -z "$CMD" ]; then
+    echo "Error: Expected a package name to delete"
+    usage
+    exit 1
+fi
+
+! command -v guix > /dev/null && {
+    echo "The Guix package manager is not installed or it is not in PATH."
+    exit 1
+}
+
+guix gc -D "$CMD"
