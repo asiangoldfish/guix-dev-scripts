@@ -16,7 +16,7 @@ if [[ "$1" == "-h" || "$1" == "--help" ]]; then
 fi
 
 # Define the Guix store directory
-GUIX_STORE="/var/log/guix/drvs/nl/"
+GUIX_STORE="/var/log/guix/drvs/"
 
 # Find the latest .drv.gz file sorted by modification time
 latest_log=$(find "$GUIX_STORE" -name "*.drv.gz" -type f -printf "%T@ %p\n" | sort -nr | awk '{print $2; exit}')
