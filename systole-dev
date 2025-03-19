@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+
+function usage() {
+    echo -n "Usage: systole-dev [COMMAND] [OPTION] args...
+
+The centralised development tool for Systole. Each command has its own set of
+options. Use its '--help' command for more information.
+
+Commands:
+    help                this page
+    build               build a package in the systole channel
+
+Example:
+    systole-dev help
+"
+}
+
+function usage-build() {
+    echo -n "Usage: systole-dev build package-name
+
+Build a package in the guix-systole channel.
+
+Commands:
+    help                this page
+
+Example:
+    systole-dev build slicer
+"   
+}
+
+function build() {
+    if [ -z "$1" ]; then
+        usage-build
+        return 0
+    fi
+
+    rm -rf /tmp/guix-build-* && /usr/bin/guix build -L . "$1" --keep-failed --keep-going --no-grafts --rounds=3 --verbosity=3
+}
+
+if [ -z "$1" ]; then
+    usage
+    exit 0
+fi
+
+# Parse COMMAND
+case "$1" in
+help )
+    usage
+    ;;
+build )
+    shift
+    build "$@"
+    ;;
+* )
+    echo "systole-dev: Unrecognized command $1. Use 'help' for commands"
+    exit 1
+esac
