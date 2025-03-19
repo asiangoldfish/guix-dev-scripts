@@ -2,17 +2,19 @@
 
 # Function to display usage
 usage() {
-    echo "Usage: log [OPTIONS]"
-    echo "Finds the most recent failed build log (.drv.gz) in the Guix store."
-    echo ""
-    echo "Options:"
-    echo "  -h, --help    Show this help message and exit."
-    exit 0
+    echo -n "Usage: log [OPTIONS]
+Finds the most recent failed build log (.drv.gz) in the Guix store.
+
+Options:
+  -h, --help        show this help message and exit.
+  -l, --location    get the log's location
+"
 }
 
 # Check for help option
 if [[ "$1" == "-h" || "$1" == "--help" ]]; then
     usage
+    exit 0
 fi
 
 # Define the Guix store directory
@@ -27,7 +29,14 @@ if [[ -n "$latest_log" ]]; then
         echo "Command zcat not found"
         exit 1
     }
-    zcat "$latest_log"
+
+    # Print location or cat the file
+    if [ "$1" == "-l" ] || [ "$1" == "--location" ]; then
+        sudo gzip -df "$latest_log"
+        echo "/var/log/guix/drvs/5i/gzcf0sahsp28wbbkbcpw8zfaqwdl3n-slicer-5.8.1.drv.gz" | sed 's/\.gz$//'
+    else
+        zcat "$latest_log"
+    fi
 else
     echo "No .drv.gz files found in $GUIX_STORE."
 fi
