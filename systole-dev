@@ -54,7 +54,7 @@ function build() {
         args="$@"
     fi
 
-    rm -rf /tmp/guix-build-* && /usr/bin/guix build -L . "$1" "$args"
+    rm -rf /tmp/guix-build-* && /usr/bin/guix build -L . "$package" $args
 }
 
 if [ -z "$1" ]; then
