@@ -54,9 +54,6 @@ function build() {
         args="$@"
     fi
 
-    echo "$args"
-    return
-
     rm -rf /tmp/guix-build-* && /usr/bin/guix build -L . "$1" "$args"
 }
 
