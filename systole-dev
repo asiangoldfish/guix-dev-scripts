@@ -34,7 +34,7 @@ function build() {
         return 0
     fi
 
-    rm -rf /tmp/guix-build-* && /usr/bin/guix build -L . "$1" --keep-failed --keep-going --no-grafts --rounds=3 --verbosity=3
+    rm -rf /tmp/guix-build-* && /usr/bin/guix build -L . "$1" --keep-failed --keep-going --no-grafts --rounds=1 --verbosity=3
 }
 
 if [ -z "$1" ]; then
