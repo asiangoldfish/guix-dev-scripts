@@ -16,25 +16,48 @@ Example:
 }
 
 function usage-build() {
-    echo -n "Usage: systole-dev build package-name
+    echo -n "Usage: systole-dev build package-name [--default-options|OPTIONS]
 
 Build a package in the guix-systole channel.
+
+To see the OPTIONS, refer to the command 'guix build --help'. This command comes
+with the flag '--default-options', which executes the following flags for guix
+build: '--keep-failed --keep-going --no-grafts --rounds=1 --verbosity=3'.
 
 Commands:
     help                this page
 
 Example:
+    # Build package slicer with no build options:
     systole-dev build slicer
+
+    # Build package slicer with default build options
+    systole-dev build slicer --default-options
+
+    # Build package slicer with custom build options
+    systole-dev build slicer --keep-failed --rounds=2
 "   
 }
 
 function build() {
-    if [ -z "$1" ]; then
+    if [ -z "$1" ] || [ "$1" == "help" ]; then
         usage-build
         return 0
     fi
 
-    rm -rf /tmp/guix-build-* && /usr/bin/guix build -L . "$1" --keep-failed --keep-going --no-grafts --rounds=1 --verbosity=3
+    package="$1"
+    shift
+
+    if [ "$1" == "--default-options" ]; then
+        args='--keep-failed --keep-going --no-grafts --rounds=1 --verbosity=3'
+    else
+        args="$@"
+    fi
+
+    echo "$args"
+    return
+
+    rm -rf /tmp/guix-build-* && /usr/bin/guix build -L . "$1" "$args"
 }
 
 if [ -z "$1" ]; then
