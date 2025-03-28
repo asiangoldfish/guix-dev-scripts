@@ -2,12 +2,13 @@
 
 # Function to display usage
 usage() {
-    echo -n "Usage: log [OPTIONS]
+    echo -n "Usage: log [OPTIONS] args...
 Finds the most recent failed build log (.drv.gz) in the Guix store.
 
 Options:
   -h, --help        show this help message and exit.
   -l, --location    get the log's location
+  -s, --search      search by pattern
 "
 }
 
@@ -34,6 +35,14 @@ if [[ -n "$latest_log" ]]; then
     if [ "$1" == "-l" ] || [ "$1" == "--location" ]; then
         sudo gzip -df "$latest_log"
         echo "/var/log/guix/drvs/5i/gzcf0sahsp28wbbkbcpw8zfaqwdl3n-slicer-5.8.1.drv.gz" | sed 's/\.gz$//'
+    elif [ "$1" == "-s" ] || [ "$1" == "--search" ]; then
+	if [ -z "$2" ]; then
+	    echo "Error: Missing package name or pattern."
+	    usage
+	    exit 1
+	else
+	    find /var/log/guix/drvs -type f -name "*$2*" -printf "%T@ %Tc %p\n" | sort -n | cut -d " " -f 2-
+	fi
     else
         zcat "$latest_log"
     fi
