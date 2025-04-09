@@ -44,7 +44,11 @@ if [[ -n "$latest_log" ]]; then
 	    find /var/log/guix/drvs -type f -name "*$2*" -printf "%T@ %Tc %p\n" | sort -n | cut -d " " -f 2-
 	fi
     else
-        zcat "$latest_log"
+	if command -v less > /dev/null; then
+	    zcat "$latest_log" | less
+	else
+	    zcat "$latest_log"
+	fi
     fi
 else
     echo "No .drv.gz files found in $GUIX_STORE."
