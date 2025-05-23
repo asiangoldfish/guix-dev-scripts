@@ -1,0 +1,2 @@
+# Use the system guix (/usr/bin/guix). 1 to enable, 0 to disable
+USE_SYSTEM_GUIX=1

@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
 
+SYSTOLE_DEV_CONFIG="$HOME/.config/guix-dev-scripts/systole-dev.cfg"
+BASEDIR="$(dirname "$0")"
+
+if [ -f "$SYSTOLE_DEV_CONFIG" ]; then
+    source "$SYSTOLE_DEV_CONFIG"
+fi
+
 function usage() {
     echo -n "Usage: systole-dev [COMMAND] [OPTION] args...
 
@@ -9,6 +16,8 @@ options. Use its '--help' command for more information.
 Commands:
     help                this page
     build               build a package in the systole channel
+    edit-config              edit the configuration file
+    generate-config     generate the configuration file
 
 Example:
     systole-dev help
@@ -54,13 +63,51 @@ function build() {
         args="$@"
     fi
 
-    rm -rf /tmp/guix-build-* && time /usr/bin/guix build -L . "$package" $args
+    guix_command=""
+    if [[ "$USE_SYSTEM_GUIX" -eq 1 ]]; then
+        guix_command="/usr/bin/guix"
+    else
+        guix_command="guix"
+    fi
+
+    command -v "$guix_command" > /dev/null || { echo "Guix not found" && return 1; }
+
+    rm -rf /tmp/guix-build-* && time "$guix_command" build -L . "$package" $args
 }
 
-if [ -z "$1" ]; then
-    usage
-    exit 0
-fi
+function generate-config() {
+    if [ "$1" == "help" ]; then
+        echo "This command does not have a help page."
+        return 0
+    fi
+
+    if [ ! -f "$BASEDIR/systole-dev.template" ]; then
+        echo "Failed to find the config template"
+        return 1
+    fi
+
+    if [ -f "$SYSTOLE_DEV_CONFIG" ]; then
+        echo "The config file already exists"
+        return 1
+    fi
+
+    mkdir -p "$(dirname "$SYSTOLE_DEV_CONFIG")"
+    cp "$BASEDIR/systole-dev.template" "$SYSTOLE_DEV_CONFIG"
+}
+
+function edit-config() {
+    editor="nano"
+    if [ ! -z "$EDITOR" ]; then
+        editor="$EDITOR"
+    fi
+
+    command -v "$EDITOR" > /dev/null || { 
+        echo "Editor not found. Set environment variable EDITOR before using this command."
+        return 1; 
+    }
+
+    "$editor" "$SYSTOLE_DEV_CONFIG"
+}
 
 # Parse COMMAND
 case "$1" in
@@ -70,6 +117,12 @@ help )
 build )
     shift
     build "$@"
+    ;;
+edit-config )
+    edit-config
+    ;;
+generate-config )
+    generate-config
     ;;
 * )
     echo "systole-dev: Unrecognized command $1. Use 'help' for commands"
