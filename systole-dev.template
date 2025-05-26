@@ -1,2 +1,5 @@
 # Use the system guix (/usr/bin/guix). 1 to enable, 0 to disable
 USE_SYSTEM_GUIX=1
+
+# Specify where in the system the Systole project is
+GUIX_SYSTOLE_DIR=""

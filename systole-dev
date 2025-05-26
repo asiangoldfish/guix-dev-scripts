@@ -14,10 +14,11 @@ The centralised development tool for Systole. Each command has its own set of
 options. Use its '--help' command for more information.
 
 Commands:
-    help                this page
     build               build a package in the systole channel
     edit-config              edit the configuration file
+    help                this page
     generate-config     generate the configuration file
+    shell               create a shell to build Systole packages
 
 Example:
     systole-dev help
@@ -45,7 +46,20 @@ Example:
 
     # Build package slicer with custom build options
     systole-dev build slicer --keep-failed --rounds=2
-"   
+"
+}
+
+function usage-shell() {
+    echo -n "Usage: systole-dev shell package-name
+
+Open a shell with the environments for the given package.
+
+Commands:
+    help                this page
+
+Available package-name:
+    slicer-5.8
+"
 }
 
 function build() {
@@ -109,21 +123,41 @@ function edit-config() {
     "$editor" "$SYSTOLE_DEV_CONFIG"
 }
 
+function shell() {
+    case "$1" in
+    'slicer-5.8' )
+        if [ -z "$GUIX_SYSTOLE_DIR" ]; then
+echo "Missing variable 'GUIX_SYSTOLE_DIR' in $HOME/.config/guix-systole-dev. Add
+this variable to the configuration file and specify where in the file system the
+project is.
+
+Use command 'systole-dev edit-config' to edit the file."
+            exit 1
+        elif [ ! -d "$GUIX_SYSTOLE_DIR" ]; then
+echo "Systole project identified as '$GUIX_SYSTOLE_DIR', but this directory does
+not exist."
+            exit 1
+        fi
+
+        guix shell -L "$GUIX_SYSTOLE_DIR" -C cmake --share=/gnu=/gnu -D libxt eigen expat openssl@3.0 git glibc hdf5 libffi libice libx11 libjpeg-turbo libxinerama mesa perl python python-sphinx rapidjson tbb zlib qtbase@5 qtmultimedia@5 qtxmlpatterns qtdeclarative@5 qtsvg@5 qtx11extras qtwebengine@5 qtwebchannel@5 qttools@5 vtk-slicer double-conversion freetype gl2ps glew jsoncpp libharu libtheora libxml++ lz4 mpich netcdf proj ctk ctkapplauncher itk-slicer libarchive-slicer teem-slicer qrestapi || exit 1
+        ;;
+    * )
+        usage-shell ;;
+    esac
+}
+
 # Parse COMMAND
 case "$1" in
 help )
-    usage
-    ;;
+    usage ;;
 build )
-    shift
-    build "$@"
-    ;;
+    shift; build "$@" ;;
 edit-config )
-    edit-config
-    ;;
+    edit-config ;;
 generate-config )
-    generate-config
-    ;;
+    generate-config ;;
+shell )
+    shift; shell "$@";;
 * )
     echo "systole-dev: Unrecognized command $1. Use 'help' for commands"
     exit 1
