@@ -21,6 +21,15 @@ The following scripts are now available:
 
 Please read the help page before using the scripts. Some of them, like [`delpkg`](./delpkg), will take effect without confirmation unless the `delpkg help` is used.
 
+## Autocompletions
+An experimental feature includes autocompletions for Bash. Source the script to your .bashrc to get started.
+
+```sh
+# ~/.bashrc
+
+source path/to/guix-dev-scripts/autocompletions.sh
+```
+
 ## Guix Shell
 Enabling the Guix shell is part of the [`systole-dev`](./systole-dev) script.
 The following packages are currently supported.
