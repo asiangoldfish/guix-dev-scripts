@@ -139,7 +139,7 @@ not exist."
             exit 1
         fi
 
-        guix shell -L "$GUIX_SYSTOLE_DIR" -C cmake --share=/gnu=/gnu -D libxt eigen expat openssl@3.0 git glibc hdf5@1.10 libffi libice libx11 libjpeg-turbo libxinerama mesa perl python python-sphinx rapidjson tbb zlib qtbase@5 qtmultimedia@5 qtxmlpatterns qtdeclarative@5 qtsvg@5 qtx11extras qtwebengine@5 qtwebchannel@5 qttools@5 vtk-slicer double-conversion freetype gl2ps glew jsoncpp libharu libtheora libxml++ lz4 mpich netcdf proj ctk ctkapplauncher itk-slicer libarchive-slicer teem-slicer qrestapi || exit 1
+        guix shell --development -L "$GUIX_SYSTOLE_DIR" slicer-5.8 -C cmake --share=/gnu=/gnu -D libxt eigen expat openssl@3.0 git glibc "hdf5@1.10" libffi libice libx11 libjpeg-turbo libxinerama mesa perl python python-sphinx rapidjson tbb zlib qtbase@5 qtmultimedia@5 qtxmlpatterns qtdeclarative@5 qtsvg@5 qtx11extras qtwebengine@5 qtwebchannel@5 qttools@5 vtk-slicer double-conversion freetype gl2ps glew jsoncpp libharu libtheora libxml++ lz4 mpich netcdf proj ctk ctkapplauncher itk-slicer libarchive-slicer teem-slicer qrestapi || exit 1
         ;;
     * )
         usage-shell ;;
