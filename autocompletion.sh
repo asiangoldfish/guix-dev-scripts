@@ -8,7 +8,20 @@ _systole_dev_completion() {
 
     commands="help build shell generate-config edit-config"
     build_opts="--default-options --keep-failed --keep-going --no-grafts --rounds=1 --verbosity=3"
-    build_pkgs="help slicer-5.8"
+    build_pkgs="help
+        slicer-5.8
+        itk-slicer
+        vtk-slicer
+        vtkaddon
+        ctk
+        ctkapplauncher
+        libarchive-slicer
+        openigtlink
+        slicer-openigtlink
+        openigtlinkio
+        pythonqt-commontk
+        qrestapi
+        teem-slicer"
     shell_pkgs="help slicer-5.8"
 
     case "${COMP_WORDS[1]}" in
