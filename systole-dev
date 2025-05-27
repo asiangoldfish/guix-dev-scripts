@@ -86,7 +86,7 @@ function build() {
 
     command -v "$guix_command" > /dev/null || { echo "Guix not found" && return 1; }
 
-    rm -rf /tmp/guix-build-* && time "$guix_command" build -L . "$package" $args
+    rm -rf /tmp/guix-build-* && time "$guix_command" build -L "$GUIX_SYSTOLE_DIR" "$package" $args
 }
 
 function generate-config() {
