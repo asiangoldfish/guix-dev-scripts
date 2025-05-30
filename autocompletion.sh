@@ -1,5 +1,12 @@
 # Bash completion for systole-dev
 
+SYSTOLE_DEV_CONFIG="$HOME/.config/guix-dev-scripts/systole-dev.cfg"
+BASEDIR="$(dirname "$0")"
+
+if [ -f "$SYSTOLE_DEV_CONFIG" ]; then
+    source "$SYSTOLE_DEV_CONFIG"
+fi
+
 _systole_dev_completion() {
     local cur prev commands opts build_opts shell_pkgs
     COMPREPLY=()
@@ -8,20 +15,7 @@ _systole_dev_completion() {
 
     commands="help build shell generate-config edit-config"
     build_opts="--default-options --keep-failed --keep-going --no-grafts --rounds=1 --verbosity=3"
-    build_pkgs="help
-        slicer-5.8
-        itk-slicer
-        vtk-slicer
-        vtkaddon
-        ctk
-        ctkapplauncher
-        libarchive-slicer
-        openigtlink
-        slicer-openigtlink
-        openigtlinkio
-        pythonqt-commontk
-        qrestapi
-        teem-slicer"
+    build_pkgs="help $(grep -r "define-public" "$GUIX_SYSTOLE_DIR" | awk '{print $2}')"
     shell_pkgs="help slicer-5.8"
 
     case "${COMP_WORDS[1]}" in
@@ -29,7 +23,7 @@ _systole_dev_completion() {
             # Complete build options or package names
             if [[ ${COMP_CWORD} -eq 2 ]]; then
                 # Suggest package names here (statically or dynamically)
-                COMPREPLY=( $(compgen -W "${build_pkgs}" -- "$cur") )
+                COMPREPLY=( $(compgen -W "${build_pkgs[@]}" -- "$cur") )
             else
                 COMPREPLY=( $(compgen -W "${build_opts}" -- "$cur") )
             fi
