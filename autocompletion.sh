@@ -13,7 +13,7 @@ _systole_dev_completion() {
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
 
-    commands="help build shell generate-config edit-config"
+    commands="help build shell generate-config edit-config install"
     build_opts="--default-options --keep-failed --keep-going --no-grafts --rounds=1 --verbosity=3"
     build_pkgs="help $(grep -r "define-public" "$GUIX_SYSTOLE_DIR" | awk '{print $2}')"
     shell_pkgs="help slicer-5.8"
@@ -26,6 +26,12 @@ _systole_dev_completion() {
                 COMPREPLY=( $(compgen -W "${build_pkgs[@]}" -- "$cur") )
             else
                 COMPREPLY=( $(compgen -W "${build_opts}" -- "$cur") )
+            fi
+            ;;
+        install)
+            # Complete build options or package names
+            if [[ ${COMP_CWORD} -eq 2 ]]; then
+                COMPREPLY=( $(compgen -W "${build_pkgs[@]}" -- "$cur") )
             fi
             ;;
         shell)

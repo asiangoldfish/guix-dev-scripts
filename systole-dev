@@ -18,6 +18,7 @@ Commands:
     edit-config              edit the configuration file
     help                this page
     generate-config     generate the configuration file
+    install             install a SystoleOS package
     shell               create a shell to build Systole packages
 
 Example:
@@ -59,6 +60,17 @@ Commands:
 
 Available package-name:
     slicer-5.8
+"
+}
+
+function usage-install() {
+        echo -n "Usage: systole-dev install package-name
+
+Install a new package.
+
+Commands:
+    help                this page
+    available-packages  list available SystoleOS packages
 "
 }
 
@@ -146,6 +158,28 @@ not exist."
     esac
 }
 
+function install() {
+    if [ -z "$1" ] || [ "$1" == "help" ]; then
+        usage-install
+        return 0
+    fi
+
+    if [ -z "$GUIX_SYSTOLE_DIR" ]; then
+        echo "Missing variable 'GUIX_SYSTOLE_DIR' in $HOME/.config/guix-systole-dev. Add
+        this variable to the configuration file and specify where in the file system the
+        project is.
+
+        Use command 'systole-dev edit-config' to edit the file."
+        exit 1
+    elif [ ! -d "$GUIX_SYSTOLE_DIR" ]; then
+        echo "Systole project identified as '$GUIX_SYSTOLE_DIR', but this directory does
+        not exist."
+            exit 1
+    fi
+
+    guix install -L "$GUIX_SYSTOLE_DIR" "$2"
+}
+
 # Parse COMMAND
 case "$1" in
 help )
@@ -156,6 +190,8 @@ edit-config )
     edit-config ;;
 generate-config )
     generate-config ;;
+install )
+    install "$@" ;;
 shell )
     shift; shell "$@";;
 * )
