@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# Usage: ./guix-dep-platform.sh <package> <platform-pattern>
+# Example: ./guix-dep-platform.sh inkscape x86_64-linux
+
+PKG="$1"
+PLATFORM_PATTERN="$2"
+
+if [[ -z "$PKG" || -z "$PLATFORM_PATTERN" ]]; then
+    echo "Usage: $0 <package> <platform-pattern>"
+    exit 1
+fi
+
+# Generate the dependency graph in dot format
+packages=$(guix graph -L . "$PKG" | grep "label" | awk '{print $4}' | sed 's/"\([^@"]*\)@[^"]*",*/\1/')
+
+readarray -t packages_arr <<< "$packages"
+
+matching_packages=()
+total=${#packages_arr[@]}
+
+for ((i=0; i<total; i++)); do
+    pkg="${packages_arr[$i]}"
+    echo "$pkg: Checking ($((i+1)) out of $total)..."
+    if guix show "$pkg" 2>/dev/null | grep -q "$platform_pattern"; then
+        matching_packages+=("$pkg")
+    fi
+done
+
+echo "Packages with platform support '$PLATFORM_PATTERN':"
+printf '%s\n' "${matching_packages[@]}"
