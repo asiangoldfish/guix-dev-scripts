@@ -22,10 +22,13 @@ total=${#packages_arr[@]}
 for ((i=0; i<total; i++)); do
     pkg="${packages_arr[$i]}"
     echo "$pkg: Checking ($((i+1)) out of $total)..."
-    if guix show "$pkg" 2>/dev/null | grep -q "$platform_pattern"; then
+    if guix show "$pkg" 2>/dev/null | grep systems | grep -qv "$PLATFORM_PATTERN"; then
         matching_packages+=("$pkg")
     fi
 done
 
-echo "Packages with platform support '$PLATFORM_PATTERN':"
-printf '%s\n' "${matching_packages[@]}"
+# Get only unique values
+IFS=" " read -r -a unique_packages <<< "$(tr ' ' '\n' <<< "${matching_packages[@]}" | sort -u | tr '\n' ' ')"
+
+echo "Packages without platform support '$PLATFORM_PATTERN':"
+printf '%s\n' "${unique_packages[@]}"
