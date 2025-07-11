@@ -15,7 +15,8 @@ options. Use its '--help' command for more information.
 
 Commands:
     build               build a package in the systole channel
-    edit-config              edit the configuration file
+    edit-config         edit the configuration file
+    deploy              deploy the operating system
     help                this page
     generate-config     generate the configuration file
     install             install a SystoleOS package
@@ -71,6 +72,13 @@ Install a new package.
 Commands:
     help                this page
     available-packages  list available SystoleOS packages
+"
+}
+
+function usage-deploy() {
+        echo -n "Usage: systole-dev deploy
+
+Deploy SystoleOS to target machines.
 "
 }
 
@@ -174,10 +182,48 @@ function install() {
     elif [ ! -d "$GUIX_SYSTOLE_DIR" ]; then
         echo "Systole project identified as '$GUIX_SYSTOLE_DIR', but this directory does
         not exist."
-            exit 1
+        exit 1
     fi
 
     guix install -L "$GUIX_SYSTOLE_DIR" "$2"
+}
+
+function deploy() {
+    if [ "$1" == "help" ]; then
+        usage-install
+        return 0
+    elif [ ! -z "$1" ]; then
+        echo "This command does not take arguments"
+        return 1
+    fi
+
+    if [ -z "$GUIX_SYSTOLE_DIR" ]; then
+        echo "Missing variable 'GUIX_SYSTOLE_DIR' in $HOME/.config/guix-systole-dev. Add
+        this variable to the configuration file and specify where in the file system the
+        project is.
+
+        Use command 'systole-dev edit-config' to edit the file."
+        exit 1
+    elif [ ! -d "$GUIX_SYSTOLE_DIR" ]; then
+        echo "Systole project identified as '$GUIX_SYSTOLE_DIR', but this directory does
+        not exist."
+        exit 1
+    fi
+
+    if [ -z "$BRAINLABMIRROR_DIR" ]; then
+        echo "Missing variable 'BRAINLABMIRROR_DIR' in $HOME/.config/guix-systole-dev. Add
+        this variable to the configuration file and specify where in the file system the
+        project is.
+
+        Use command 'systole-dev edit-config' to edit the file."
+        exit 1
+    elif [ ! -d "$BRAINLABMIRROR_DIR" ]; then
+        echo "BrainlabMirror project identified as '$BRAINLABMIRROR_DIR', but this directory does
+        not exist."
+        exit 1
+    fi
+
+    guix deploy -L "$BRAINLABMIRROR_DIR" -L "$GUIX_SYSTOLE_DIR" "$BRAINLABMIRROR_DIR/systoleos/deployment.scm"
 }
 
 # Parse COMMAND
@@ -186,6 +232,8 @@ help )
     usage ;;
 build )
     shift; build "$@" ;;
+deploy)
+    shift; deploy "$@" ;;
 edit-config )
     edit-config ;;
 generate-config )
@@ -195,6 +243,11 @@ install )
 shell )
     shift; shell "$@";;
 * )
-    echo "systole-dev: Unrecognized command $1. Use 'help' for commands"
-    exit 1
+    if [ -z "$1" ]; then
+        usage
+        exit 0
+    else
+        echo "systole-dev: Unrecognized command $1. Use 'help' for commands"
+        exit 1
+    fi
 esac

@@ -3,3 +3,5 @@ USE_SYSTEM_GUIX=1
 
 # Specify where in the system the Systole project is
 GUIX_SYSTOLE_DIR=""
+
+BRAINLABMIRROR_DIR=""
